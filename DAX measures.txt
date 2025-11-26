@@ -1,0 +1,36 @@
+DAX QUERY VIEW
+
+QUERY 1
+Number of countries reporting =EVALUATE
+SUMMARIZECOLUMNS(
+    'HIV_Expenditure'[country],
+    "DistinctCountries", DISTINCTCOUNT('HIV_Expenditure'[country]),
+    "Total_HIV_Expenditure", SUM('HIV_Expenditure'[hiv_expenditure])
+)
+
+
+QUERY 2
+Total_HIV_Expenditure=EVALUATE
+SUMMARIZE(
+    'HIV_Expenditure',
+    'HIV_Expenditure'[country],
+    "Total_HIV_Expenditure", 
+    SUM( 'HIV_Expenditure'[hiv_expenditure] )
+
+QUERY 3
+Latest year reported
+DEFINE
+    MEASURE 'HIV_Expenditure'[Latest Year] =
+        MAX('HIV_Expenditure'[year])
+
+    MEASURE 'HIV_Expenditure'[LatestYearExpenditure] =
+        CALCULATE(
+            SUM('HIV_Expenditure'[hiv_expenditure]),
+            FILTER('HIV_Expenditure', 'HIV_Expenditure'[year] = [Latest Year])
+        )
+
+EVALUATE
+ROW(
+    "Latest Year", 'HIV_Expenditure'[Latest Year],
+    "LatestYearExpenditure", 'HIV_Expenditure'[LatestYearExpenditure]
+)
